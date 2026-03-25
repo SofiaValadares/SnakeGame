@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { reactRouterFutureFlags } from './config/reactRouterFuture';
 import './design-system/design-system.css';
 import './index.css';
 import App from './App';
@@ -11,7 +12,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter future={reactRouterFutureFlags}>
       <App />
     </BrowserRouter>
   </React.StrictMode>

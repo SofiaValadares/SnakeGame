@@ -33,8 +33,35 @@ Outros comandos:
 
 ```bash
 npm run build   # produção → pasta build/
-npm test        # testes (Jest + Testing Library)
+npm test        # testes interativos
+CI=true npm test -- --watchAll=false   # uma corrida (CI)
 ```
+
+### Testes unitários / integração leve
+
+Todos os ficheiros `*.test.ts(x)` estão em **`src/tests/`**, espelhando a estrutura do código:
+
+```
+src/tests/
+  App.test.tsx
+  config/externalLinks.test.ts
+  context/SnakeThemeContext.test.tsx
+  models/CategoryModel.test.ts
+  pages/
+    home/Home.test.tsx
+    game/Game.test.tsx
+```
+
+| Ficheiro | Conteúdo |
+|----------|----------|
+| `src/tests/config/externalLinks.test.ts` | `getPortfolioUrl` e `REACT_APP_PORTFOLIO_URL` |
+| `src/tests/models/CategoryModel.test.ts` | Integridade de `CategorysList` |
+| `src/tests/context/SnakeThemeContext.test.tsx` | Tema, mudança de categoria, hook fora do provider |
+| `src/tests/pages/home/Home.test.tsx` | Menu inicial, categorias, link Jogar |
+| `src/tests/pages/game/Game.test.tsx` | Jogo, painel, pausa, portfólio, menu |
+| `src/tests/App.test.tsx` | Rotas e navegação |
+
+O Jest (CRA) continua a usar `src/setupTests.ts`, incluindo mock mínimo de `canvas.getContext('2d')` para jsdom. As flags `future` do React Router v7 estão em `src/config/reactRouterFuture.ts` e são aplicadas no `BrowserRouter` e nos `MemoryRouter` dos testes, para não aparecerem avisos de deprecação na consola.
 
 ## Portfólio (opcional)
 
