@@ -9,5 +9,5 @@ test('renders home', () => {
       <App />
     </MemoryRouter>
   );
-  expect(screen.getByText(/home/i)).toBeInTheDocument();
+  expect(screen.getByText(/snake/i)).toBeInTheDocument();
 });

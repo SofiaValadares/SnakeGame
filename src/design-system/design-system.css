@@ -1,0 +1,7 @@
+/**
+ * Arcade Retro Design System — import único
+ * Ordem: tokens → base → componentes
+ */
+@import './tokens.css';
+@import './base.css';
+@import './components.css';
