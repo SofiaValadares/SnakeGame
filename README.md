@@ -49,9 +49,7 @@ Ficheiros `*.test.ts(x)` em **`src/tests/`**:
 |----------|----------|
 | `App.test.tsx` | Rotas e navegação |
 | `config/colorPresets.test.ts` | Presets de cor |
-| `config/externalLinks.test.ts` | `REACT_APP_PORTFOLIO_URL` (opcional) |
 | `context/SnakeThemeContext.test.tsx` | Cores primária/secundária |
-| `models/CategoryModel.test.ts` | Modelo de categorias (dados) |
 | `pages/home/Home.test.tsx` | Seletores de cor, link Jogar |
 | `pages/game/Game.test.tsx` | Tabuleiro, recorde, comandos, pausa |
 | `pages/game/SnakeGame.keyboard.test.tsx` | Teclado |
@@ -64,19 +62,17 @@ O Jest usa `src/setupTests.ts` (mock de `canvas.getContext('2d')`). As flags `fu
 1. **Cores** — `src/config/colorPresets.ts` e tema em `src/context/SnakeThemeContext.tsx`.
 2. **Textos e meta** — `public/index.html`, `public/manifest.json`, `src/pages/`.
 3. **Design system** — `src/design-system/`.
-4. **Portfólio (opcional)** — variável `REACT_APP_PORTFOLIO_URL` em `.env` (ver `src/config/externalLinks.ts`).
 
 ## Estrutura (resumo)
 
 ```
 src/
-  config/            # presets, router, links externos
+  config/            # presets e router
   context/           # tema da cobra (cores)
   design-system/     # tokens e componentes CSS
   pages/
     home/            # menu e seleção de cores
     game/            # Snake, scoreboard e comandos
-  models/            # categorias (dados; uso futuro)
   utils/             # recorde (localStorage + DOM)
 ```
 
@@ -84,6 +80,3 @@ src/
 
 Projeto pessoal aberto à reutilização. Adapta conteúdo e créditos às tuas regras.
 
----
-
-*Boa sorte a quem quiser transformar um snake num cartão de visitas jogável.*

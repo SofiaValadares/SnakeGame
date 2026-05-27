@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 
 export const DEFAULT_PRIMARY_COLOR = '#8B5CF6';
 export const DEFAULT_SECONDARY_COLOR = '#61DAFB';
