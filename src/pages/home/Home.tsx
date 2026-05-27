@@ -10,7 +10,7 @@ const HomePage: FC<HomePageProps> = () => {
     <div className="ds-screen ds-screen--top ds-screen--viewport ds-screen--fill">
       <div className="home-panel">
         <header className="home-panel__header">
-          <h1 className="ds-title">Snake</h1>
+          <h1 className="ds-title">Snake Arcade</h1>
         </header>
         <div className="home-selection-mount">
           <HomeSelectionBoard />
