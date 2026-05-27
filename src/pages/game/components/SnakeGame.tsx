@@ -79,16 +79,19 @@ function stepHead(head: Point, dir: Direction): Point {
 
 export interface SnakeGameProps {
   paused: boolean;
-  /** Listra nos índices pares (cabeça = par) — cor da categoria */
-  stripeA: string;
-  /** Listra nos índices ímpares — cor da competência */
-  stripeB: string;
+  /** Listras nos índices pares (cabeça = par) */
+  primaryColor: string;
+  /** Listras nos índices ímpares + maçã */
+  secondaryColor: string;
   onScore?: (score: number) => void;
   onGameOver?: (over: boolean) => void;
 }
 
 const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(
-  function SnakeGame({ paused, stripeA, stripeB, onScore, onGameOver }, ref) {
+  function SnakeGame(
+    { paused, primaryColor, secondaryColor, onScore, onGameOver },
+    ref
+  ) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const snakeRef = useRef<Point[]>(initialSnake());
     const dirRef = useRef<Direction>(INITIAL_DIR);
@@ -122,15 +125,15 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(
         ctx.stroke();
       }
 
-      ctx.fillStyle = '#ff3344';
-      ctx.shadowColor = '#ff6b7a';
+      ctx.fillStyle = secondaryColor;
+      ctx.shadowColor = secondaryColor;
       ctx.shadowBlur = 8;
       ctx.fillRect(apple.x * CELL + 2, apple.y * CELL + 2, CELL - 4, CELL - 4);
       ctx.shadowBlur = 0;
 
       snake.forEach((seg, i) => {
         const isHead = i === 0;
-        ctx.fillStyle = i % 2 === 0 ? stripeA : stripeB;
+        ctx.fillStyle = i % 2 === 0 ? primaryColor : secondaryColor;
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.lineWidth = 2;
         const pad = isHead ? 1 : 2;
@@ -147,7 +150,7 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(
           CELL - pad * 2
         );
       });
-    }, [stripeA, stripeB]);
+    }, [primaryColor, secondaryColor]);
 
     const resetInternal = useCallback(() => {
       snakeRef.current = initialSnake();
@@ -240,6 +243,9 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(
           }
           return;
         }
+
+        if (paused) return;
+
         const map: Record<string, Direction> = {
           ArrowUp: 'UP',
           ArrowDown: 'DOWN',
@@ -251,17 +257,22 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(
           KeyD: 'RIGHT',
         };
         const dir = map[e.code];
-        if (dir) {
-          e.preventDefault();
-          const current = dirRef.current;
-          if (!isOpposite(current, dir)) {
-            pendingDirRef.current = dir;
-          }
+        if (!dir) return;
+
+        e.preventDefault();
+        const current = dirRef.current;
+        if (!isOpposite(current, dir)) {
+          pendingDirRef.current = dir;
         }
       };
-      window.addEventListener('keydown', onKey);
-      return () => window.removeEventListener('keydown', onKey);
-    }, [resetInternal]);
+
+      document.addEventListener('keydown', onKey, true);
+      return () => document.removeEventListener('keydown', onKey, true);
+    }, [resetInternal, paused]);
+
+    useEffect(() => {
+      canvasRef.current?.focus({ preventScroll: true });
+    }, []);
 
     const onCanvasClick = () => {
       canvasRef.current?.focus();
@@ -280,7 +291,6 @@ const SnakeGame = forwardRef<SnakeGameHandle, SnakeGameProps>(
         height={SIZE}
         className="snake-canvas"
         onClick={onCanvasClick}
-        onKeyDown={(e) => e.stopPropagation()}
       />
     );
   }

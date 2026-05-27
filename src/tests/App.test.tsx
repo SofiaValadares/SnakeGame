@@ -25,7 +25,7 @@ describe('App', () => {
   it('navigates to game when Jogar is clicked', async () => {
     renderApp('/');
     await userEvent.click(screen.getByRole('link', { name: /jogar/i }));
-    expect(screen.getByText('Painel')).toBeInTheDocument();
+    expect(screen.getByText('Recorde')).toBeInTheDocument();
     expect(
       screen.getByRole('application', { name: /jogo snake/i })
     ).toBeInTheDocument();

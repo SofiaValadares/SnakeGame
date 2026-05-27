@@ -1,7 +1,11 @@
-import React, { FC, useCallback, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getPortfolioUrl } from '../../config/externalLinks';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSnakeTheme } from '../../context/SnakeThemeContext';
+import {
+  readHighScore,
+  updateHighScoreIfHigher,
+  writeHighScore,
+} from '../../utils/highScore';
+import GameControlsPanel from './components/GameControlsPanel';
 import SnakeGame, { Direction, SnakeGameHandle } from './components/SnakeGame';
 import './Game.css';
 
@@ -9,15 +13,34 @@ interface GamePageProps {}
 
 const GamePage: FC<GamePageProps> = () => {
   const snakeRef = useRef<SnakeGameHandle>(null);
+  const scoreRef = useRef(0);
   const [score, setScore] = useState(0);
+  const [record, setRecord] = useState(() => readHighScore());
   const [paused, setPaused] = useState(false);
   const [gameOver, setGameOver] = useState(false);
 
-  const onScore = useCallback((n: number) => setScore(n), []);
-  const onGameOver = useCallback((over: boolean) => setGameOver(over), []);
+  const { primaryColor, secondaryColor } = useSnakeTheme();
 
-  const portfolioUrl = getPortfolioUrl();
-  const { stripeA, stripeB } = useSnakeTheme();
+  const onScore = useCallback((n: number) => {
+    scoreRef.current = n;
+    setScore(n);
+    setRecord((prev) => {
+      if (n <= prev) return prev;
+      writeHighScore(n);
+      return n;
+    });
+  }, []);
+
+  const onGameOver = useCallback((over: boolean) => {
+    setGameOver(over);
+    if (over) {
+      setRecord((prev) => updateHighScoreIfHigher(Math.max(prev, scoreRef.current)));
+    }
+  }, []);
+
+  useEffect(() => {
+    setRecord(readHighScore());
+  }, []);
 
   const queueDir = (dir: Direction) => {
     snakeRef.current?.queueDirection(dir);
@@ -30,19 +53,29 @@ const GamePage: FC<GamePageProps> = () => {
 
   const newGame = () => {
     setPaused(false);
+    setGameOver(false);
     snakeRef.current?.reset();
   };
 
   return (
-    <div className="ds-screen ds-screen--top ds-screen--viewport">
+    <div className="ds-screen ds-screen--top ds-screen--viewport ds-screen--fill">
       <div className="game-page">
         <header className="game-page__header">
-          <p className="ds-tag">Arcade</p>
           <h1 className="ds-heading">Snake</h1>
-          <p className="ds-caption">
-            Come maçãs, cresce e evita bater nas paredes ou em ti.
-          </p>
         </header>
+
+        <div className="game-scoreboard" aria-live="polite">
+          <div className="game-scoreboard__item">
+            <span className="game-scoreboard__label">Pontuação</span>
+            <span className="game-scoreboard__value">{score}</span>
+          </div>
+          <div className="game-scoreboard__item">
+            <span className="game-scoreboard__label">Recorde</span>
+            <span className="game-scoreboard__value game-scoreboard__value--record">
+              {record}
+            </span>
+          </div>
+        </div>
 
         <div className="game-layout">
           <div className="game-board-column">
@@ -50,8 +83,8 @@ const GamePage: FC<GamePageProps> = () => {
               <SnakeGame
                 ref={snakeRef}
                 paused={paused}
-                stripeA={stripeA}
-                stripeB={stripeB}
+                primaryColor={primaryColor}
+                secondaryColor={secondaryColor}
                 onScore={onScore}
                 onGameOver={onGameOver}
               />
@@ -59,7 +92,7 @@ const GamePage: FC<GamePageProps> = () => {
                 <div className="game-overlay">
                   Pausa
                   <br />
-                  <span className="game-hint">Clica em continuar no painel</span>
+                  <span className="game-hint">Continuar no painel</span>
                 </div>
               )}
               {gameOver && (
@@ -67,113 +100,20 @@ const GamePage: FC<GamePageProps> = () => {
                   Game over
                   <br />
                   <span className="game-hint">
-                    Espaço, Enter ou clica para jogar outra vez
+                    Espaço, Enter ou novo jogo
                   </span>
                 </div>
               )}
             </div>
-            <p className="game-hint">
-              Clica no tabuleiro para focar teclas. Setas ou WASD.
-            </p>
           </div>
 
-          <aside className="game-sidebar" aria-label="Controlos e opções">
-            <h2 className="game-sidebar__title">Painel</h2>
-            <p className="game-sidebar__label">Pontuação (maçãs)</p>
-            <p className="game-score" aria-live="polite">
-              {score}
-            </p>
-
-            <p className="game-sidebar__label">Direção</p>
-            <div className="game-dpad" role="group" aria-label="Direções">
-              <div className="game-dpad__cell" />
-              <div className="game-dpad__cell">
-                <button
-                  type="button"
-                  className="ds-btn ds-btn--secondary game-dpad__btn"
-                  aria-label="Cima"
-                  onClick={() => queueDir('UP')}
-                >
-                  ▲
-                </button>
-              </div>
-              <div className="game-dpad__cell" />
-              <div className="game-dpad__cell">
-                <button
-                  type="button"
-                  className="ds-btn ds-btn--secondary game-dpad__btn"
-                  aria-label="Esquerda"
-                  onClick={() => queueDir('LEFT')}
-                >
-                  ◀
-                </button>
-              </div>
-              <div className="game-dpad__cell" />
-              <div className="game-dpad__cell">
-                <button
-                  type="button"
-                  className="ds-btn ds-btn--secondary game-dpad__btn"
-                  aria-label="Direita"
-                  onClick={() => queueDir('RIGHT')}
-                >
-                  ▶
-                </button>
-              </div>
-              <div className="game-dpad__cell" />
-              <div className="game-dpad__cell">
-                <button
-                  type="button"
-                  className="ds-btn ds-btn--secondary game-dpad__btn"
-                  aria-label="Baixo"
-                  onClick={() => queueDir('DOWN')}
-                >
-                  ▼
-                </button>
-              </div>
-              <div className="game-dpad__cell" />
-            </div>
-
-            <p className="game-sidebar__label">Teclado</p>
-            <p className="ds-caption game-sidebar__keyboard-hint">
-              ↑ ↓ ← → ou W A S D
-            </p>
-
-            <div className="game-sidebar-actions">
-              <button
-                type="button"
-                className="ds-btn ds-btn--primary"
-                onClick={togglePause}
-                disabled={gameOver}
-              >
-                {paused ? 'Continuar' : 'Pausar'}
-              </button>
-              <button type="button" className="ds-btn ds-btn--ghost" onClick={newGame}>
-                Novo jogo
-              </button>
-              <Link to="/" className="ds-btn ds-btn--ghost">
-                Menu principal
-              </Link>
-              {portfolioUrl ? (
-                <a
-                  href={portfolioUrl}
-                  className="ds-btn ds-btn--ghost"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Portfólio
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  className="ds-btn ds-btn--ghost"
-                  disabled
-                  title="Define REACT_APP_PORTFOLIO_URL no .env"
-                >
-                  Portfólio (em breve)
-                </button>
-              )}
-            </div>
-          </aside>
+          <GameControlsPanel
+            paused={paused}
+            gameOver={gameOver}
+            onDirection={queueDir}
+            onTogglePause={togglePause}
+            onNewGame={newGame}
+          />
         </div>
       </div>
     </div>

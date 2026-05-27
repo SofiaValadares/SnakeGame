@@ -36,6 +36,15 @@
   justify-content: flex-start;
 }
 
+/** Ocupa toda a área útil da viewport (home / jogo) */
+.ds-screen--fill {
+  width: 100%;
+  max-width: none;
+  padding: clamp(var(--ds-space-2), 1.5dvh, var(--ds-space-3));
+  align-items: stretch;
+  justify-content: stretch;
+}
+
 /* Scanlines + vinheta CRT (leve, desliga com prefers-reduced-motion se necessário) */
 .ds-crt::before {
   content: '';

@@ -20,11 +20,14 @@ const W = GRID_W * CELL;
 const H = GRID_H * CELL;
 
 interface SnakeStripPreviewProps {
-  stripeA: string;
-  stripeB: string;
+  primaryColor: string;
+  secondaryColor: string;
 }
 
-const SnakeStripPreview: FC<SnakeStripPreviewProps> = ({ stripeA, stripeB }) => {
+const SnakeStripPreview: FC<SnakeStripPreviewProps> = ({
+  primaryColor,
+  secondaryColor,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -53,7 +56,7 @@ const SnakeStripPreview: FC<SnakeStripPreviewProps> = ({ stripeA, stripeB }) => 
 
     SEGMENTS.forEach((seg, i) => {
       const isHead = i === 0;
-      ctx.fillStyle = i % 2 === 0 ? stripeA : stripeB;
+      ctx.fillStyle = i % 2 === 0 ? primaryColor : secondaryColor;
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
       ctx.lineWidth = 2;
       const pad = isHead ? 1 : 2;
@@ -72,12 +75,12 @@ const SnakeStripPreview: FC<SnakeStripPreviewProps> = ({ stripeA, stripeB }) => 
     });
 
     const apple = { x: 8, y: 6 };
-    ctx.fillStyle = '#ff3344';
-    ctx.shadowColor = '#ff6b7a';
+    ctx.fillStyle = secondaryColor;
+    ctx.shadowColor = secondaryColor;
     ctx.shadowBlur = 6;
     ctx.fillRect(apple.x * CELL + 2, apple.y * CELL + 2, CELL - 4, CELL - 4);
     ctx.shadowBlur = 0;
-  }, [stripeA, stripeB]);
+  }, [primaryColor, secondaryColor]);
 
   return (
     <canvas

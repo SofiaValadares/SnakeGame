@@ -5,17 +5,15 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { CategorysList } from '../models/CategoryModel';
+
+export const DEFAULT_PRIMARY_COLOR = '#8B5CF6';
+export const DEFAULT_SECONDARY_COLOR = '#61DAFB';
 
 export type SnakeThemeContextValue = {
-  categoryIndex: number;
-  competenceIndex: number;
-  selectCategory: (index: number) => void;
-  selectCompetence: (index: number) => void;
-  /** Cor da categoria — listra ímpar (0, 2, 4…) */
-  stripeA: string;
-  /** Cor da competência — listra par */
-  stripeB: string;
+  primaryColor: string;
+  secondaryColor: string;
+  setPrimaryColor: (color: string) => void;
+  setSecondaryColor: (color: string) => void;
 };
 
 const SnakeThemeContext = createContext<SnakeThemeContextValue | null>(null);
@@ -25,38 +23,18 @@ export function SnakeThemeProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [categoryIndex, setCategoryIndex] = useState(0);
-  const [competenceIndex, setCompetenceIndex] = useState(0);
+  const [primaryColor, setPrimaryColor] = useState(DEFAULT_PRIMARY_COLOR);
+  const [secondaryColor, setSecondaryColor] = useState(DEFAULT_SECONDARY_COLOR);
 
-  const selectCategory = useCallback((index: number) => {
-    setCategoryIndex(index);
-    setCompetenceIndex(0);
-  }, []);
-
-  const selectCompetence = useCallback((index: number) => {
-    setCompetenceIndex(index);
-  }, []);
-
-  const value = useMemo((): SnakeThemeContextValue => {
-    const cat = CategorysList[categoryIndex] ?? CategorysList[0];
-    const comps = cat.competences;
-    const comp = comps[competenceIndex] ?? comps[0];
-    const stripeB = comp?.color ?? cat.color;
-
-    return {
-      categoryIndex,
-      competenceIndex,
-      selectCategory,
-      selectCompetence,
-      stripeA: cat.color,
-      stripeB,
-    };
-  }, [
-    categoryIndex,
-    competenceIndex,
-    selectCategory,
-    selectCompetence,
-  ]);
+  const value = useMemo(
+    (): SnakeThemeContextValue => ({
+      primaryColor,
+      secondaryColor,
+      setPrimaryColor,
+      setSecondaryColor,
+    }),
+    [primaryColor, secondaryColor]
+  );
 
   return (
     <SnakeThemeContext.Provider value={value}>
