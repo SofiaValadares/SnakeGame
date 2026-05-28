@@ -4,7 +4,7 @@ Jogo **Snake** em React com estética **retro / arcade**. Escolhe as cores da co
 
 ## Demo (deploy)
 
-**[https://snake-game-rose-six.vercel.app/](https://snake-game-rose-six.vercel.app/)**
+**[https://snakearcade.sofiavcav.dev/](https://snakearcade.sofiavcav.dev/)**
 
 ## Funcionalidades
 
